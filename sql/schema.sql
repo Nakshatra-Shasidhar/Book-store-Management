@@ -89,6 +89,14 @@ CREATE TABLE order_item (
     ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
+-- Indexes for faster search/navigation
+CREATE INDEX idx_author_name ON author(author_name);
+CREATE INDEX idx_book_title ON book(title);
+CREATE INDEX idx_book_genre ON book(genre);
+CREATE INDEX idx_customer_name ON customer(name);
+CREATE INDEX idx_employee_name ON employee(employee_name);
+CREATE INDEX idx_order_date ON `order`(order_date);
+
 -- Derived totals per order
 CREATE VIEW v_order_totals AS
 SELECT

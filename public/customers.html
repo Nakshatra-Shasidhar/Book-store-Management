@@ -1,0 +1,134 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customers</title>
+  <link rel="stylesheet" href="assets/app.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">Customers</div>
+    <div class="nav">
+      <a href="index.html">Dashboard</a>
+      <a href="books.html">Books</a>
+      <a href="authors.html">Authors</a>
+      <a href="customers.html">Customers</a>
+      <a href="orders.html">Orders</a>
+      <a href="employees.html">Employees</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2>Record Viewing</h2>
+      <div class="toolbar">
+        <button id="btnAll">View All</button>
+        <button class="secondary" id="btnFirst">First</button>
+        <button class="secondary" id="btnLast">Last</button>
+        <input id="searchText" placeholder="Search by name" />
+        <button id="btnSearch">Search</button>
+      </div>
+      <div class="table-wrap">
+        <table id="dataTable"></table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2>Insert / Update / Delete</h2>
+      <form id="createForm" class="form-grid">
+        <input name="name" placeholder="Name" required />
+        <input name="email" placeholder="Email" />
+        <input name="address_street" placeholder="Street" />
+        <input name="address_city" placeholder="City" />
+        <input name="address_state" placeholder="State" />
+        <input name="address_zip" placeholder="ZIP" />
+        <button type="submit">Insert Customer</button>
+      </form>
+
+      <form id="updateForm" class="form-grid" style="margin-top:12px;">
+        <input name="customer_id" placeholder="Customer Id" required />
+        <input name="name" placeholder="Name" required />
+        <input name="email" placeholder="Email" />
+        <input name="address_street" placeholder="Street" />
+        <input name="address_city" placeholder="City" />
+        <input name="address_state" placeholder="State" />
+        <input name="address_zip" placeholder="ZIP" />
+        <button type="submit">Update Customer</button>
+      </form>
+
+      <form id="deleteForm" class="form-grid" style="margin-top:12px;">
+        <input name="customer_id" placeholder="Customer Id" required />
+        <button type="submit">Delete Customer</button>
+      </form>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2>Customer Phones (Multi-valued)</h2>
+      <form id="phoneAddForm" class="form-grid">
+        <input name="customer_id" placeholder="Customer Id" required />
+        <input name="phone_number" placeholder="Phone Number" required />
+        <button type="submit">Add Phone</button>
+      </form>
+      <form id="phoneDeleteForm" class="form-grid" style="margin-top:12px;">
+        <input name="customer_id" placeholder="Customer Id" required />
+        <input name="phone_number" placeholder="Phone Number" required />
+        <button type="submit">Delete Phone</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+  <script>
+    const entity = 'customer';
+
+    async function load(action, params = {}) {
+      const rows = await apiGet('/api/entity.php', { entity, action, ...params });
+      renderTable('dataTable', rows);
+    }
+
+    document.getElementById('btnAll').onclick = () => load('list');
+    document.getElementById('btnFirst').onclick = () => load('first');
+    document.getElementById('btnLast').onclick = () => load('last');
+    document.getElementById('btnSearch').onclick = () => {
+      const q = document.getElementById('searchText').value || '';
+      load('search', { q });
+    };
+
+    document.getElementById('createForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const data = formToObject(e.target);
+      const res = await apiPost('/api/entity.php?entity=customer&action=create', data);
+      if (res.success) load('list');
+    };
+
+    document.getElementById('updateForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const data = formToObject(e.target);
+      const res = await apiPost('/api/entity.php?entity=customer&action=update', data);
+      if (res.success) load('list');
+    };
+
+    document.getElementById('deleteForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const data = formToObject(e.target);
+      const res = await apiPost('/api/entity.php?entity=customer&action=delete', data);
+      if (res.success) load('list');
+    };
+
+    document.getElementById('phoneAddForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const data = formToObject(e.target);
+      await apiPost('/api/phones.php?action=add', data);
+    };
+
+    document.getElementById('phoneDeleteForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const data = formToObject(e.target);
+      await apiPost('/api/phones.php?action=delete', data);
+    };
+
+    load('list');
+  </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orders</title>
+  <link rel="stylesheet" href="assets/app.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">Orders</div>
+    <div class="nav">
+      <a href="index.html">Dashboard</a>
+      <a href="books.html">Books</a>
+      <a href="authors.html">Authors</a>
+      <a href="customers.html">Customers</a>
+      <a href="orders.html">Orders</a>
+      <a href="employees.html">Employees</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2>Record Viewing (Bill Totals)</h2>
+      <div class="toolbar">
+        <button id="btnAll">View All</button>
+        <button class="secondary" id="btnFirst">First</button>
+        <button class="secondary" id="btnLast">Last</button>
+        <input id="searchText" placeholder="Search by Order Id or Customer Id" />
+        <button id="btnSearch">Search</button>
+      </div>
+      <div class="table-wrap">
+        <table id="dataTable"></table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2>Create Order (Bill Generation)</h2>
+      <form id="orderForm" class="form-grid">
+        <input name="order_date" placeholder="Order Date (YYYY-MM-DD)" required />
+        <input name="payment_mode" placeholder="Payment Mode" required />
+        <input name="customer_id" placeholder="Customer Id" required />
+        <input name="employee_id" placeholder="Employee Id" required />
+        <div style="grid-column: 1 / -1;"></div>
+        <input id="book_id" placeholder="Book Id" />
+        <input id="quantity" placeholder="Quantity" />
+        <input id="unit_price" placeholder="Unit Price" />
+        <button type="button" id="addItem">Add Item</button>
+        <div style="grid-column: 1 / -1;">
+          <div class="table-wrap">
+            <table id="itemsTable"></table>
+          </div>
+        </div>
+        <button type="submit">Create Order</button>
+      </form>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2>Delete Order</h2>
+      <form id="deleteForm" class="form-grid">
+        <input name="order_id" placeholder="Order Id" required />
+        <button type="submit">Delete Order</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+  <script>
+    let items = [];
+
+    function renderItems() {
+      if (items.length === 0) {
+        document.getElementById('itemsTable').innerHTML = '<tr><td class="muted">No items added</td></tr>';
+        return;
+      }
+      renderTable('itemsTable', items);
+    }
+
+    async function load(action, params = {}) {
+      const rows = await apiGet('/api/orders.php', { action, ...params });
+      renderTable('dataTable', rows);
+    }
+
+    document.getElementById('btnAll').onclick = () => load('list');
+    document.getElementById('btnFirst').onclick = () => load('first');
+    document.getElementById('btnLast').onclick = () => load('last');
+    document.getElementById('btnSearch').onclick = () => {
+      const q = document.getElementById('searchText').value || '';
+      load('search', { q });
+    };
+
+    document.getElementById('addItem').onclick = () => {
+      const book_id = document.getElementById('book_id').value;
+      const quantity = document.getElementById('quantity').value;
+      const unit_price = document.getElementById('unit_price').value;
+      if (!book_id || !quantity || !unit_price) return;
+      items.push({ book_id, quantity, unit_price });
+      renderItems();
+      document.getElementById('book_id').value = '';
+      document.getElementById('quantity').value = '';
+      document.getElementById('unit_price').value = '';
+    };
+
+    document.getElementById('orderForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const data = formToObject(e.target);
+      data.items = JSON.stringify(items);
+      const res = await apiPost('/api/orders.php?action=create', data);
+      if (res.success) {
+        items = [];
+        renderItems();
+        load('list');
+      }
+    };
+
+    document.getElementById('deleteForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const data = formToObject(e.target);
+      const res = await apiPost('/api/orders.php?action=delete', data);
+      if (res.success) load('list');
+    };
+
+    renderItems();
+    load('list');
+  </script>
+</body>
+</html>

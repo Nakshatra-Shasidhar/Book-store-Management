@@ -1,29 +1,30 @@
-﻿# Book Store Management System (DBMS DA-II)
+﻿# Book Store Management System
 
-## Setup (MySQL)
-1. Create database and tables:
-   - Run `sql/schema.sql` in MySQL.
-2. Seed sample data (optional):
-   - Run `sql/seed.sql`.
-3. Update DB credentials in `api/db.php` if needed.
-
-## Run the App (PHP)
-From the project folder:
-
-```bash
-php -S localhost:8000 -t public
-```
-
-Open in browser:
-- `http://localhost:8000/index.html`
+A web-based DBMS project to manage books, authors, customers, employees, and orders with full CRUD operations and bill generation.
 
 ## Features
-- View All / First / Last / Search
-- Insert / Update / Delete
-- Bill generation using `v_order_totals` view
+- Dashboard with quick navigation
+- Books: view all / first / last, search, insert, update, delete
+- Authors: view all / first / last, search, insert, update, delete
+- Customers: view all / first / last, search, insert, update, delete
+- Customer phones (multi-valued attribute) management
+- Employees: view all / first / last, search, insert, update, delete
+- Orders: create order, view totals (bill generation), delete order
+- Bill generation using total of order items
 
-## Files
-- `sql/schema.sql` schema
-- `sql/seed.sql` sample data
+## Tech Stack
+- Front-End: HTML, CSS, JavaScript
+- Back-End: PHP
+- Database: MySQL
+
+## Key Folders
+- `public/` UI pages
 - `api/` PHP endpoints
-- `public/` UI
+- `sql/` schema and seed data
+
+## Setup (Short)
+1. Run `sql/schema.sql` in MySQL Workbench
+2. Run `sql/seed.sql` (optional)
+3. Update DB credentials in `api/db.php`
+4. Start server: `php -S localhost:8000 -t public`
+5. Open: `http://localhost:8000/index.html`

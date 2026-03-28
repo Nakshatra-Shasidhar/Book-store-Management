@@ -2,7 +2,7 @@
 // Basic database config. Update these to your local MySQL credentials.
 $DB_HOST = 'localhost';
 $DB_USER = 'root';
-$DB_PASS = '';
+$DB_PASS = 'Nakshu@2006';
 $DB_NAME = 'bookstore_db';
 
 $mysqli = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);

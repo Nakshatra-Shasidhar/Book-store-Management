@@ -65,7 +65,8 @@ if ($action === 'last') {
 
 if ($action === 'search') {
   $q = get_param('q', '');
-  $sql = "SELECT * FROM $table WHERE $search_field LIKE ? ORDER BY $pk ASC";
+  // Normalize search by removing dots/spaces and lowercasing
+  $sql = "SELECT * FROM $table WHERE REPLACE(REPLACE(LOWER($search_field), '.', ''), ' ', '') LIKE REPLACE(REPLACE(LOWER(?), '.', ''), ' ', '') ORDER BY $pk ASC";
   $stmt = $mysqli->prepare($sql);
   $like = '%' . $q . '%';
   $stmt->bind_param('s', $like);
